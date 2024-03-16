@@ -1,0 +1,12 @@
+.bundle/
+dist/
+*.env
+.jekyll-cache/
+.jekyll-metadata
+node_modules/
+_site/
+.sass-cache/
+tmp/
+*.tmp
+vendor/
+.wrangler/

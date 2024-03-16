@@ -1,0 +1,13 @@
+{{>above}}
+
+<div class="container d-flex justify-content-center row">
+    <form method="POST" action="bulk.html" class="col-sm-12 col-md-9 col-lg-6">
+        <div class="mb-3">
+            <label for="domains" class="form-label">Domains to check</label>
+            <textarea name="domains" class="form-control" id="domains" row="10">{{domains}}</textarea>
+        </div>
+        <input type="submit" class="btn btn-primary" value="Submit"/>
+    </form>
+</div>
+
+{{>below}}

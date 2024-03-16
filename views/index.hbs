@@ -1,0 +1,15 @@
+{{>above}}
+
+<div class="container d-flex justify-content-center row">
+    <form method="POST" action="/" class="col-sm-12 col-md-9 col-lg-6">
+        <div class="mb-3">
+            <label for="domain" class="form-label">Domain</label>
+            <input name="domain" class="form-control" id="domain">{{domain}}</textarea>
+        </div>
+        <input type="submit" class="btn btn-primary" value="Lookup" />
+    </form>
+</div>
+
+<p class="mt-3"><a href="/bimi/bulk.html">Bulk add</a></p>
+
+{{>below}}
