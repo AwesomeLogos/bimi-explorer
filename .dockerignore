@@ -1,0 +1,8 @@
+.*
+*.env
+Dockerfile
+README.md
+*.sh
+tmp
+TODO.md
+
