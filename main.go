@@ -8,6 +8,8 @@ import (
 
 func main() {
 
+	// test()
+
 	var listenPort, portErr = strconv.Atoi(os.Getenv("PORT"))
 	if portErr != nil {
 		listenPort = 4000

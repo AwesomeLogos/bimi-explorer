@@ -10,6 +10,9 @@
     </form>
 </div>
 
+{{#each domains}}
+<a href="/bimi/{{this.domain}}/"><img src="{{this.imgurl.String}}" alt="{{this.domain}}" style="height:48pt;" /></a>
+{{/each}}
 <p class="mt-3"><a href="/bimi/bulk.html">Bulk add</a></p>
 
 {{>below}}

@@ -1,0 +1,20 @@
+CREATE TABLE lookup (
+	created TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	updated TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	domain VARCHAR(255) NOT NULL,
+	success BOOLEAN,
+	raw TEXT,
+	processed BOOLEAN DEFAULT FALSE,
+	PRIMARY KEY (domain, created)
+);
+
+CREATE TABLE domain (
+	created TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	updated TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	domain VARCHAR(255) NOT NULL PRIMARY KEY,
+	imgurl VARCHAR(1024),
+	headers VARCHAR(1024),
+	imgsvg VARCHAR(32768)
+);
+
+CREATE INDEX domain_created ON domain (created);

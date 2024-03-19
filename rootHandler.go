@@ -7,9 +7,13 @@ import (
 
 func rootHandlerGet(w http.ResponseWriter, r *http.Request) {
 
+	domains, dbErr := listSampleDomains(50)
+
 	runTemplate(w, r, "index.hbs", map[string]any{
-		"h1":    "Welcome",
-		"title": "BIMI Explorer",
+		"domains": domains,
+		"err":     dbErr,
+		"h1":      "Welcome",
+		"title":   "BIMI Explorer",
 	})
 
 }

@@ -49,6 +49,7 @@ func initTemplates() map[string]TemplateFunc {
 	viewErr := fs.WalkDir(viewFiles, ".", func(path string, d fs.DirEntry, err error) error {
 		fmt.Printf("%v\n", d)
 		if err != nil {
+			logger.Error("walkdir error", "err", err)
 			return err
 		}
 		if !d.IsDir() {

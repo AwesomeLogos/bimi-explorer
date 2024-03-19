@@ -8,6 +8,10 @@ ADD . /build/
 WORKDIR /build
 ARG COMMIT
 ARG LASTMOD
+RUN echo "INFO: installing sqlc"
+RUN go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+RUN echo "INFO: generating sqlc"
+RUN sqlc generate
 RUN echo "INFO: building for $COMMIT on $LASTMOD"
 RUN \
     CGO_ENABLED=0 GOOS=linux go build \

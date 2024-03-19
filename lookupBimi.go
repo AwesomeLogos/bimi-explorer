@@ -21,9 +21,14 @@ type DnsAnswer struct {
 	Data string `json:"data"`
 }
 
-func lookupBimi(domain string) (string, error) {
+func lookupBimi(rawDomain string) (string, error) {
 
-	//LATER: validate domain
+	domain, domainErr := purifyDomain(rawDomain)
+	if domainErr != nil {
+		logger.Error("invalid domain", "domain", rawDomain, "err", domainErr)
+		return "", domainErr
+	}
+
 	requestURL := fmt.Sprintf("https://cloudflare-dns.com/dns-query?name=default._bimi.%s&type=TXT", domain)
 	req, newErr := http.NewRequest(http.MethodGet, requestURL, nil)
 	if newErr != nil {
@@ -61,17 +66,18 @@ func lookupBimi(domain string) (string, error) {
 	}
 	if data.Answer == nil {
 		logger.Error("dns error no answer", "domain", domain)
-		return "", fmt.Errorf("DNS_ERROR: %s", "NODATA")
+		return "", fmt.Errorf("DNS_ERROR: %s", "NILDATA")
 	}
 	if len(data.Answer) == 0 {
 		logger.Error("dns error empty answer", "domain", domain)
-		return "", fmt.Errorf("DNS_ERROR: %s", "NODATA")
+		return "", fmt.Errorf("DNS_ERROR: %s", "LENZERO")
 	}
 
 	for _, answerEntry := range data.Answer {
 		answer := removeQuotes(answerEntry.Data)
 		bimi := findBimi(answer)
 		if bimi != "" {
+			upsertDomain(domain, bimi)
 			return bimi, nil
 		}
 	}
