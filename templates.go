@@ -1,20 +1,21 @@
 package main
 
 import (
+	"bytes"
 	"embed"
 	"fmt"
 	"io/fs"
 	"net/http"
 	"strings"
 
-	"github.com/aymerick/raymond"
+	"html/template"
 )
 
 //go:embed partials
-var partialFiles embed.FS
+var partialsFS embed.FS
 
 //go:embed all:views
-var viewFiles embed.FS
+var viewsFS embed.FS
 
 type TemplateFunc func(data any) (string, error)
 
@@ -26,19 +27,20 @@ func initTemplates() map[string]TemplateFunc {
 
 	theCache := make(map[string]TemplateFunc)
 
-	partialErr := fs.WalkDir(partialFiles, ".", func(path string, d fs.DirEntry, err error) error {
+	var partials bytes.Buffer
+
+	partialErr := fs.WalkDir(partialsFS, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
 		if !d.IsDir() {
-			logger.Info("registering partial", "filename", path)
-			content, readErr := fs.ReadFile(partialFiles, path)
+			// read the partials file and append to partials
+			content, readErr := fs.ReadFile(partialsFS, path)
 			if readErr != nil {
 				logger.Error("unable to read partials file", "err", readErr, "filename", path)
 				return err
 			}
-			name := path[len("partials/") : len(path)-len(".hbs")]
-			raymond.RegisterPartial(name, string(content))
+			partials.Write(content)
 		}
 		return nil
 	})
@@ -46,7 +48,7 @@ func initTemplates() map[string]TemplateFunc {
 		logger.Error("unable to register partials", "err", partialErr)
 	}
 
-	viewErr := fs.WalkDir(viewFiles, ".", func(path string, d fs.DirEntry, err error) error {
+	viewErr := fs.WalkDir(viewsFS, ".", func(path string, d fs.DirEntry, err error) error {
 		fmt.Printf("%v\n", d)
 		if err != nil {
 			logger.Error("walkdir error", "err", err)
@@ -54,18 +56,32 @@ func initTemplates() map[string]TemplateFunc {
 		}
 		if !d.IsDir() {
 			logger.Info("registering view", "filename", path)
-			content, readErr := fs.ReadFile(viewFiles, path)
+			content, readErr := fs.ReadFile(viewsFS, path)
 			if readErr != nil {
 				logger.Error("unable to read view file", "err", readErr, "filename", path)
 				return err
 			}
 			name := path[len("views/"):]
-			template, parseErr := raymond.Parse(string(content))
+
+			var templateBuffer bytes.Buffer
+			templateBuffer.Write(content)
+			templateBuffer.Write(partials.Bytes())
+			t := template.New(name)
+			template, parseErr := t.Parse(templateBuffer.String())
 			if parseErr != nil {
 				logger.Error("unable to parse template", "err", parseErr, "filename", path, "content", string(content))
 				return parseErr
 			}
-			theCache[name] = template.Exec
+			fmt.Printf("template: %s has %v\n", t.Name(), t.DefinedTemplates())
+			theCache[name] = func(data any) (string, error) {
+				var buf bytes.Buffer
+				err := template.Execute(&buf, data)
+				if err != nil {
+					logger.Error("unable to execute template", "err", err, "filename", path, "content", string(content))
+					return "", err
+				}
+				return buf.String(), nil
+			}
 		}
 		return nil
 	})

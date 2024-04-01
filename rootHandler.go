@@ -9,7 +9,7 @@ func rootHandlerGet(w http.ResponseWriter, r *http.Request) {
 
 	domains, dbErr := listSampleDomains(50)
 
-	runTemplate(w, r, "index.hbs", map[string]any{
+	runTemplate(w, r, "index.tmpl", map[string]any{
 		"domains": domains,
 		"err":     dbErr,
 		"h1":      "Welcome",

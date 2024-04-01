@@ -1,15 +1,15 @@
-{{>above}}
+{{template "above" .}}
 
-{{#if err}}
+{{ if (ne .err nil) }}
 <div class="alert alert-danger">
-    {{err}}
+    {{.err}}
 </div>
 {{else}}
 <div class="container d-flex justify-content-center row">
     <div class="col-sm-12 col-md-9 col-lg-6">
-        <img src="{{bimi}}" alt="{{domain}} logo" />
+        <img src="{{.bimi}}" alt="{{.domain}} logo" />
     </div>
 </div>
-{{/if}}
+{{end}}
 
-{{>below}}
+{{template "below" .}}

@@ -12,7 +12,7 @@ func bulkHandlerGet(w http.ResponseWriter, r *http.Request) {
 
 	domains := os.Getenv("BULKDOMAINS")
 
-	runTemplate(w, r, "bimi/bulk.hbs", map[string]any{
+	runTemplate(w, r, "bimi/bulk.tmpl", map[string]any{
 		"title":   "Bulk Add",
 		"domains": domains,
 	})

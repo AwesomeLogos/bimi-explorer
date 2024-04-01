@@ -1,8 +1,9 @@
+{{define "above"}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>{{#if h1}}{{ title }}{{else}}{{ title }} - BIMI Explorer{{/if}}</title>
+	<title>{{if (ne .h1 "")}}{{ .title }}{{else}}{{ .title }} - BIMI Explorer{{end}}</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="referrer" content="unsafe-url" />
 	<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -45,15 +46,15 @@
 	<nav class="navbar navbar-expand d-flex justify-content-between d-print-none border-bottom bg-body-tertiary pb-1 mb-2">
 		<div class="container">
 			<div class="navbar-nav">
-				<a class="navbar-brand h1 mb-0" href="/" title="{{site.title}}"><span class="d-sm-none">BIMI</span><span class="d-none d-sm-inline"><img
-						alt="{{site.title}} Logo" class="navbar-logo me-2" src="/images/logo.svg" style="height:1em;vertical-align:middle;"/>BIMI Explorer</span></a>
+				<a class="navbar-brand h1 mb-0" href="/" title="{{.site.title}}"><span class="d-sm-none">BIMI</span><span class="d-none d-sm-inline"><img
+						alt="{{.site.title}} Logo" class="navbar-logo me-2" src="/images/logo.svg" style="height:1em;vertical-align:middle;"/>BIMI Explorer</span></a>
 			</div>
 			<div class="navbar-nav">
 				<a class="nav-link" href="/">Home</a>
-				{{#each crumbtrail}}
+				{{range .crumbtrail}}
 				<span class="navbar-text font-weight-bold">&nbsp;&raquo;&nbsp;</span><a class="nav-link text-nobreak"
-					href="{{this.url}}">{{this.text}}</a>
-				{{/each}}
+					href="{{.URL}}">{{.Text}}</a>
+				{{end}}
 			</div>
 		</div>
 	</nav>
@@ -62,6 +63,7 @@
 		<div class="row">
 			<div class="col">
 				<h1>
-					{{#if h1}}{{h1}}{{else}}{{ title }}{{/if}}
+					{{if (ne .h1 "")}}{{.h1}}{{else}}{{ .title }}{{end}}
 				</h1>
 				<hr />
+{{end}}

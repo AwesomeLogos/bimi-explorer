@@ -98,7 +98,7 @@ func findBimi(data string) string {
 	}
 
 	for _, field := range fields {
-		if field[0:2] == "l=" {
+		if len(field) > 10 && field[0:2] == "l=" {
 			return field[2:]
 		}
 	}
