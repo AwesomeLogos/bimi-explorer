@@ -20,15 +20,16 @@ func main() {
 	var listenAddress = os.Getenv("ADDRESS")
 
 	http.HandleFunc("/status.json", statusHandler)
-	http.HandleFunc("GET /{$}", rootHandlerGet)
-	http.HandleFunc("POST /{$}", rootHandlerPost)
+	http.HandleFunc("/{$}", func(w http.ResponseWriter, r *http.Request) { http.Redirect(w, r, "/bimi/", http.StatusSeeOther) })
+	http.HandleFunc("GET /bimi/{$}", rootHandlerGet)
+	http.HandleFunc("POST /bimi/{$}", rootHandlerPost)
 	http.HandleFunc("/robots.txt", staticHandler.ServeHTTP)
 	http.HandleFunc("/favicon.ico", staticHandler.ServeHTTP)
 	http.HandleFunc("/favicon.svg", staticHandler.ServeHTTP)
 	http.HandleFunc("/images/", staticHandler.ServeHTTP)
-	http.HandleFunc("POST /bimi/bulk.html", bulkHandlerPost)
-	http.HandleFunc("GET /bimi/bulk.html", bulkHandlerGet)
 	http.HandleFunc("/bimi/{domain}/{$}", bimiHandler)
+	http.HandleFunc("/bimi/list.html", listHandler)
+	http.HandleFunc("/bimi/view.html", viewHandler)
 
 	err := http.ListenAndServe(listenAddress+":"+strconv.Itoa(listenPort), nil)
 	if err != nil {

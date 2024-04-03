@@ -1,15 +1,11 @@
 {{template "above" .}}
 
-{{ if (ne .err nil) }}
-<div class="alert alert-danger">
-    {{.err}}
-</div>
-{{else}}
+{{ if .Bimi }}
 <div class="container d-flex justify-content-center row">
     <div class="col-sm-12 col-md-9 col-lg-6">
-        <img src="{{.bimi}}" alt="{{.domain}} logo" />
+        <img src="{{.Bimi}}" alt="{{.Domain}} logo" />
     </div>
 </div>
-{{end}}
+{{ end }}
 
 {{template "below" .}}

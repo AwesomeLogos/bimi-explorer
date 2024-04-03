@@ -1,0 +1,40 @@
+{{template "above" .}}
+
+<div class="row">
+    <div class="col">
+        There are {{.Count}} domains with BIMI logos.
+    </div>
+</div>
+
+<div class="btn-toolbar d-flex justify-content-center mb-3" role="toolbar" aria-label="Paging">
+    <div class="btn-group" role="group" aria-label="Pages">
+    {{range $page := loop 1 (inc .MaxPage) }}
+        <a href="?page={{$page}}" class="btn btn-outline-secondary{{if (eq $.CurrentPage $page)}} active{{end}}">{{$page}}</a>
+    {{end}}
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Domain</th>
+            <th>Image URL</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{range .Domains}}
+        <tr>
+            <td><a href="https://{{.Domain}}/">{{.Domain}}</a></td>
+            <td><a href="/bimi/{{.Domain}}/">{{.Imgurl.String}}</td>
+        </tr>
+    {{end}}
+    </tbody>
+</table>
+
+<div class="row">
+    <div class="col">
+        ({{len .Domains}} rows)
+    </div>
+</div>
+
+{{template "below" .}}

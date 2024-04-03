@@ -16,9 +16,9 @@ func bimiHandler(w http.ResponseWriter, r *http.Request) {
 	bimi, bimiErr := lookupBimi(domain)
 
 	runTemplate(w, r, "_bimi/index.tmpl", map[string]any{
-		"title":  fmt.Sprintf("BIMI for %s", domain),
-		"domain": domain,
-		"err":    bimiErr,
-		"bimi":   bimi,
+		"Bimi":   bimi,
+		"Domain": domain,
+		"Err":    bimiErr,
+		"Title":  fmt.Sprintf("BIMI Logo for %s", domain),
 	})
 }

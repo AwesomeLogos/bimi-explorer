@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"net/url"
 	"os"
 
@@ -39,7 +38,7 @@ func upsertDomain(domain, imgurl string) error {
 	defer conn.Close(context.Background())
 
 	queries := generated.New(conn)
-	row, queryErr := queries.UpsertDomain(context.Background(), generated.UpsertDomainParams{
+	_, queryErr := queries.UpsertDomain(context.Background(), generated.UpsertDomainParams{
 		Domain: domain,
 		Imgurl: pgtype.Text{String: imgurl, Valid: true},
 	})
@@ -48,11 +47,29 @@ func upsertDomain(domain, imgurl string) error {
 		return queryErr
 	}
 
-	fmt.Printf("upsert=%v\n", row)
 	return nil
 }
 
-func listSampleDomains(limit int32) ([]generated.Domain, error) {
+func countDomains() (int64, error) {
+
+	conn, connErr := connect()
+	if connErr != nil {
+		// already logged
+		return 0, connErr
+	}
+	defer conn.Close(context.Background())
+
+	queries := generated.New(conn)
+	row, queryErr := queries.CountDomains(context.Background())
+	if queryErr != nil {
+		logger.Error("Unable count rows", "err", queryErr)
+		return 0, queryErr
+	}
+
+	return row, nil
+}
+
+func listDomains(limit int32, offset int32) ([]generated.ListDomainsRow, error) {
 
 	conn, connErr := connect()
 	if connErr != nil {
@@ -62,12 +79,14 @@ func listSampleDomains(limit int32) ([]generated.Domain, error) {
 	defer conn.Close(context.Background())
 
 	queries := generated.New(conn)
-	rows, queryErr := queries.ListSampleDomains(context.Background(), limit)
+	rows, queryErr := queries.ListDomains(context.Background(), generated.ListDomainsParams{
+		Thelimit:  limit,
+		Theoffset: offset,
+	})
 	if queryErr != nil {
 		logger.Error("Unable to insert into database", "err", queryErr)
 		return nil, queryErr
 	}
 
-	fmt.Printf("upsert=%v\n", rows)
 	return rows, nil
 }

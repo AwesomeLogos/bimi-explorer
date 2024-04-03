@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"embed"
-	"fmt"
 	"io/fs"
 	"net/http"
 	"strings"
@@ -24,6 +23,19 @@ type TemplateData map[string]any
 var templateCache = initTemplates()
 
 func initTemplates() map[string]TemplateFunc {
+
+	funcMap := template.FuncMap{
+		"inc": func(i int) int {
+			return i + 1
+		},
+		"loop": func(from, to int) []int {
+			result := []int{}
+			for i := from; i < to; i++ {
+				result = append(result, i)
+			}
+			return result
+		},
+	}
 
 	theCache := make(map[string]TemplateFunc)
 
@@ -49,13 +61,12 @@ func initTemplates() map[string]TemplateFunc {
 	}
 
 	viewErr := fs.WalkDir(viewsFS, ".", func(path string, d fs.DirEntry, err error) error {
-		fmt.Printf("%v\n", d)
 		if err != nil {
 			logger.Error("walkdir error", "err", err)
 			return err
 		}
 		if !d.IsDir() {
-			logger.Info("registering view", "filename", path)
+			logger.Debug("registering view", "filename", path)
 			content, readErr := fs.ReadFile(viewsFS, path)
 			if readErr != nil {
 				logger.Error("unable to read view file", "err", readErr, "filename", path)
@@ -66,13 +77,12 @@ func initTemplates() map[string]TemplateFunc {
 			var templateBuffer bytes.Buffer
 			templateBuffer.Write(content)
 			templateBuffer.Write(partials.Bytes())
-			t := template.New(name)
+			t := template.New(name).Funcs(funcMap)
 			template, parseErr := t.Parse(templateBuffer.String())
 			if parseErr != nil {
 				logger.Error("unable to parse template", "err", parseErr, "filename", path, "content", string(content))
 				return parseErr
 			}
-			fmt.Printf("template: %s has %v\n", t.Name(), t.DefinedTemplates())
 			theCache[name] = func(data any) (string, error) {
 				var buf bytes.Buffer
 				err := template.Execute(&buf, data)
