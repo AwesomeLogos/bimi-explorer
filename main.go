@@ -8,7 +8,10 @@ import (
 
 func main() {
 
-	// test()
+	if len(os.Args) > 1 {
+		bulkLoader(os.Args[1:])
+		return
+	}
 
 	var listenPort, portErr = strconv.Atoi(os.Getenv("PORT"))
 	if portErr != nil {

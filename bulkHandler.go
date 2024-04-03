@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"regexp"
 	"time"
 )
 
@@ -17,8 +16,6 @@ func bulkHandlerGet(w http.ResponseWriter, r *http.Request) {
 		"domains": domains,
 	})
 }
-
-var splitter = regexp.MustCompile("[\r\n, ]+")
 
 func bulkHandlerPost(w http.ResponseWriter, r *http.Request) {
 
