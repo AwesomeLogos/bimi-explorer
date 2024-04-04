@@ -14,7 +14,9 @@ CREATE TABLE domain (
 	domain VARCHAR(255) NOT NULL PRIMARY KEY,
 	imgurl VARCHAR(1024),
 	headers VARCHAR(1024),
-	imgsvg VARCHAR(32768)
+	imgsvg VARCHAR(32768),
+	valid BOOLEAN,
+	reason VARCHAR(1024)
 );
 
 CREATE INDEX domain_created ON domain (created);

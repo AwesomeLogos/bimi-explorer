@@ -9,7 +9,11 @@ import (
 func main() {
 
 	if len(os.Args) > 1 {
-		bulkLoader(os.Args[1:])
+		if os.Args[1] == "--validate" {
+			bulkValidate()
+		} else {
+			bulkLoader(os.Args[1:])
+		}
 		return
 	}
 
@@ -28,8 +32,11 @@ func main() {
 	http.HandleFunc("/favicon.svg", staticHandler.ServeHTTP)
 	http.HandleFunc("/images/", staticHandler.ServeHTTP)
 	http.HandleFunc("/bimi/{domain}/{$}", bimiHandler)
+	http.HandleFunc("/bimi/invalid.html", listInvalidHandler)
 	http.HandleFunc("/bimi/list.html", listHandler)
 	http.HandleFunc("/bimi/view.html", viewHandler)
+	http.HandleFunc("/bimi/sourceData.json", sourceDataJson)
+	http.HandleFunc("/bimi/sourceData.tgz", sourceDataTgz)
 
 	err := http.ListenAndServe(listenAddress+":"+strconv.Itoa(listenPort), nil)
 	if err != nil {

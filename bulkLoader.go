@@ -43,9 +43,6 @@ func bulkLoader(filenames []string) {
 		scanner := bufio.NewScanner(bufio.NewReaderSize(file, 100*1024))
 		for scanner.Scan() {
 			domainChan <- scanner.Text()
-			if scanner.Text() == "fileformat.info" {
-				fmt.Fprintf(os.Stderr, "INFO: skipping fileformat.info\n")
-			}
 			count++
 			if count%1000 == 0 {
 				fmt.Fprintf(os.Stderr, ".")

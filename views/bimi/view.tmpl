@@ -1,20 +1,39 @@
 {{template "above" .}}
 
-<form class="row row-cols-lg-auto g-3 justify-content-center align-items-center mb-3" method="GET" action="/bimi/view.html">
-  <div class="col-12">
-    <label class="" for="page">Page</label>
-</div>
-<div class="col-12">
-    <div class="input-group">
-      <input type="text" class="form-control" id="page" name="page" placeholder="{{.CurrentPage}}" value="{{.CurrentPage}}" />
-      <div class="input-group-text">of {{.MaxPage}}</div>
-    </div>
+<div class="d-flex row justify-content-between mb-3">
+  <div class="col">
+  {{if (eq .CurrentPage 1)}}
+    <a class="btn btn-primary disabled" aria-disabled="true">&laquo;</a>
+  {{else}}
+    <a class="btn btn-primary" href="?page={{(inc .CurrentPage)}}">&laquo;</a>
+  {{end}}
   </div>
 
-  <div class="col-12">
-    <button type="submit" class="btn btn-primary">Go</button>
+  <div class="col">
+    <form class="row row-cols-lg-auto g-1 justify-content-center align-items-center mb-3" method="GET" action="/bimi/view.html">
+      <div class="col-12">
+        <label class="" for="page">Page</label>
+      </div>
+      <div class="col-12">
+        <div class="input-group">
+          <input type="text" class="form-control" id="page" name="page" placeholder="{{.CurrentPage}}" value="{{.CurrentPage}}" />
+          <div class="input-group-text">of {{.MaxPage}}</div>
+        </div>
+      </div>
+      <div class="col-12">
+        <button type="submit" class="btn btn-primary">Go</button>
+      </div>
+    </form>
   </div>
-</form>
+
+  <div class="col float-end">
+  {{if (eq .CurrentPage .MaxPage)}}
+    <a class="float-end btn btn-primary disabled" aria-disabled="true">&raquo;</a>
+  {{else}}
+    <a class="float-end btn btn-primary" href="?page={{(inc .CurrentPage)}}">&raquo;</a>
+  {{end}}
+  </div>
+</div>
 
 {{range .Domains}}
 <a class="mx-2" href="/bimi/{{.Domain}}/"><img src="{{.Imgurl.String}}" alt="{{.Domain}}" style="height:48pt;" /></a>

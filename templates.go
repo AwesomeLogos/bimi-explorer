@@ -25,6 +25,9 @@ var templateCache = initTemplates()
 func initTemplates() map[string]TemplateFunc {
 
 	funcMap := template.FuncMap{
+		"dec": func(i int) int {
+			return i - 1
+		},
 		"inc": func(i int) int {
 			return i + 1
 		},

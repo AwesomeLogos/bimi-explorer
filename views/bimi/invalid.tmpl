@@ -2,7 +2,7 @@
 
 <div class="row">
     <div class="col">
-        There are {{.Count}} domains with BIMI logos.
+        There are {{.Count}} domains with invalid BIMI logos.
     </div>
 </div>
 
@@ -19,13 +19,17 @@
         <tr>
             <th>Domain</th>
             <th>Image URL</th>
+            <th>Reason</th>
+            <th>&nbsp;</th>
         </tr>
     </thead>
     <tbody>
     {{range .Domains}}
         <tr>
             <td><a href="https://{{.Domain}}/">{{.Domain}}</a></td>
-            <td><a href="/bimi/{{.Domain}}/">{{.Imgurl.String}}</a></td>
+            <td>{{.Imgurl.String}}</td>
+            <td>{{.Reason.String}}</td>
+            <td><a class="btn btn-sm btn-outline-primary" href="/bimi/{{.Domain}}/refresh.html">Refresh</td>
         </tr>
     {{end}}
     </tbody>
