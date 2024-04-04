@@ -50,7 +50,7 @@ func GenerateIndex(domains []generated.Domain) Source {
 		}
 		source.Images = append(source.Images, image)
 	}
-	source.LastModified = lastModified.Format(time.RFC3339)
+	source.LastModified = lastModified.UTC().Format(time.RFC3339)
 
 	return source
 }
