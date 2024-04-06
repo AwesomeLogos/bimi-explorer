@@ -1,11 +1,44 @@
 {{template "above" .}}
 
-{{ if .Bimi }}
+<style>
+    .zoomed {
+        width: 100%;
+        height: auto;
+    }
+</style>
+
+<h3>Masked</h3>
 <div class="container d-flex justify-content-center row">
-    <div class="col-sm-12 col-md-9 col-lg-6">
-        <img src="{{.Bimi}}" alt="{{.Domain}} logo" />
+    <div class="col-xs-12 col-sm-4">
+        <!--later masked -->
+        <svg class="masked-image" width="100%" height="100%" viewBox="0 0 100 100">
+            <defs>
+                <mask id="circle-mask">
+                    <circle cx="50" cy="50" r="50" fill="white" />
+                </mask>
+            </defs>
+            <image class="masked-image" xlink:href="{{.Bimi}}" width="100%" height="100%" mask="url(#circle-mask)" />
+        </svg>
+    </div>
+    <div class="col-xs-12 col-sm-4">
+        <!--later masked -->
+        <svg class="masked-image" width="100%" height="100%" viewBox="0 0 100 100">
+            <defs>
+                <mask id="rrect-mask">
+                    <rect x="0" y="0" width="100" height="100" rx="10" ry="10" fill="white" />
+                </mask>
+            </defs>
+            <image class="masked-image" xlink:href="{{.Bimi}}" width="100%" height="100%" mask="url(#rrect-mask)" />
+        </svg>
     </div>
 </div>
-{{ end }}
+
+
+<h3>Zoomed</h3>
+<div class="row">
+    <div class="col">
+        <img class="zoomed" src="{{.Bimi}}" alt="{{.Domain}} logo" />
+    </div>
+</div>
 
 {{template "below" .}}

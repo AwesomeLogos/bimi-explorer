@@ -35,8 +35,12 @@
   </div>
 </div>
 
+<div class="row">
+  <div class="col logo-container">
 {{range .Domains}}
-<a class="mx-2" href="/bimi/{{.Domain}}/"><img src="{{.Imgurl.String}}" alt="{{.Domain}}" style="height:48pt;" /></a>
+    <a href="/bimi/{{.Domain}}/"><img src="{{.Imgurl.String}}" alt="{{.Domain}}" /></a>
 {{end}}
+  </div>
+</div>
 
 {{template "below" .}}
