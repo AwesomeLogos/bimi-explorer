@@ -1,18 +1,27 @@
 {{template "above" .}}
 
 <div class="container d-flex justify-content-center row">
-    <form method="POST" action="/" class="col-sm-12 col-md-9 col-lg-6">
+    <form method="GET" class="col-sm-12 col-md-9 col-lg-6">
         <div class="mb-3">
-            <label for="domain" class="form-label">Domain</label>
-            <input name="domain" class="form-control" id="domain">{{.domain}}</textarea>
+            <input name="q" class="form-control" id="q" value="{{.Query}}" />
         </div>
-        <input type="submit" class="btn btn-primary" value="Lookup" />
+        <input type="submit" class="btn btn-primary" value="Search" />
     </form>
 </div>
 
+{{if .Domains}}
+<div class="row py-3">
+    <div class="col">
+{{range .Domains}}
+        <a class="mx-2" href="/bimi/{{.Domain}}/"><img src="{{.Imgurl.String}}" alt="{{.Domain}}" style="height:48pt;" /></a>
+{{end}}
+    </div>
+</div>
+{{end}}
+
 <div class="row">
     <div class="col">
-        <a href="view.html">View Images</a>
+        <a href="view.html">View all</a>
         | <a href="list.html">List (text)</a>
         | <a href="invalid.html">Invalid</a>
     </div>

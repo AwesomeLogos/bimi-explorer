@@ -44,6 +44,16 @@ SELECT
     OFFSET 
         sqlc.arg(theOffset);
 
+-- name: ListRandom :many
+SELECT
+        *
+    FROM 
+        domain TABLESAMPLE SYSTEM_ROWS(2 * sqlc.arg(theLimit)) 
+    WHERE
+        valid = TRUE
+    LIMIT 
+        sqlc.arg(theLimit);
+
 -- name: ListInvalidDomains :many
 SELECT 
         *
@@ -77,14 +87,13 @@ SELECT
         *
     FROM 
         domain 
-    WHERE
-        domain LIKE sqlc.arg(search)
+    WHERE TRUE
+        AND domain ILIKE sqlc.arg(search)
+        AND valid = TRUE
     ORDER BY 
         domain 
     LIMIT 
-        sqlc.arg(theLimit) 
-    OFFSET 
-        sqlc.arg(theOffset);
+        100; 
 
 -- name: UpdateValidation :exec
 UPDATE 

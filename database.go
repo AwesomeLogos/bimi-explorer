@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/AwesomeLogos/bimi-explorer/generated"
 	"github.com/jackc/pgx/v5"
@@ -148,6 +149,25 @@ func listInvalidDomains(limit int32, offset int32) ([]generated.Domain, error) {
 	return rows, nil
 }
 
+func listRandomDomains(limit int32) ([]generated.Domain, error) {
+
+	conn, connErr := connect()
+	if connErr != nil {
+		// already logged
+		return nil, connErr
+	}
+	defer conn.Close(context.Background())
+
+	queries := generated.New(conn)
+	rows, queryErr := queries.ListRandom(context.Background(), limit)
+	if queryErr != nil {
+		logger.Error("Unable to select random", "err", queryErr)
+		return nil, queryErr
+	}
+
+	return rows, nil
+}
+
 func listUnvalidatedDomains(limit int32, offset int32) ([]generated.Domain, error) {
 
 	conn, connErr := connect()
@@ -164,6 +184,29 @@ func listUnvalidatedDomains(limit int32, offset int32) ([]generated.Domain, erro
 	})
 	if queryErr != nil {
 		logger.Error("Unable to insert into database", "err", queryErr)
+		return nil, queryErr
+	}
+
+	return rows, nil
+}
+
+func searchDomains(searchTerm string) ([]generated.Domain, error) {
+
+	conn, connErr := connect()
+	if connErr != nil {
+		// already logged
+		return nil, connErr
+	}
+	defer conn.Close(context.Background())
+
+	if !strings.Contains(searchTerm, "%") {
+		searchTerm = "%" + searchTerm + "%"
+	}
+
+	queries := generated.New(conn)
+	rows, queryErr := queries.SearchDomains(context.Background(), searchTerm)
+	if queryErr != nil {
+		logger.Error("Unable to select random", "err", queryErr)
 		return nil, queryErr
 	}
 

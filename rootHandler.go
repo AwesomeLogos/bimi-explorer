@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
+
+	"github.com/AwesomeLogos/bimi-explorer/generated"
 )
 
 func listHandler(w http.ResponseWriter, r *http.Request) {
@@ -70,23 +71,28 @@ func listInvalidHandler(w http.ResponseWriter, r *http.Request) {
 
 func rootHandlerGet(w http.ResponseWriter, r *http.Request) {
 
+	var domains []generated.Domain
+	var dbErr error
+
+	query := r.URL.Query().Get("q")
+	if query != "" {
+		domains, dbErr = searchDomains(query)
+	} else {
+		domains, dbErr = listRandomDomains(50)
+	}
+
 	runTemplate(w, r, "bimi/index.tmpl", map[string]any{
-		"H1":    "Welcome",
-		"Title": "BIMI Explorer",
+		"Domains": domains,
+		"Err":     dbErr,
+		"H1":      "Welcome",
+		"Query":   query,
+		"Title":   "BIMI Explorer",
 	})
 
 }
 
 func rootHandlerPost(w http.ResponseWriter, r *http.Request) {
-
-	r.ParseForm()
-	domain := r.Form.Get("domain")
-	if domain == "" {
-		http.Redirect(w, r, "/bimi/?err=You+must+enter+a+domain", http.StatusSeeOther)
-		return
-	}
-
-	http.Redirect(w, r, fmt.Sprintf("/bimi/%s/", domain), http.StatusSeeOther)
+	http.Redirect(w, r, "/bimi/", http.StatusSeeOther)
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request) {
