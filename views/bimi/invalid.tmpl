@@ -27,7 +27,7 @@
     {{range .Domains}}
         <tr>
             <td><a href="https://{{.Domain}}/">{{.Domain}}</a></td>
-            <td>{{.Imgurl.String}}</td>
+            <td><a href="{{.Imgurl.String}}">{{.Imgurl.String}}</a></td>
             <td>{{.Reason.String}}</td>
             <td><a class="btn btn-sm btn-outline-primary" href="/bimi/{{.Domain}}/refresh.html">Refresh</td>
         </tr>
