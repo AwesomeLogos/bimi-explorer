@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/AwesomeLogos/bimi-explorer/generated"
+	"github.com/AwesomeLogos/bimi-explorer/internal/db/generated"
 )
 
 type Image struct {

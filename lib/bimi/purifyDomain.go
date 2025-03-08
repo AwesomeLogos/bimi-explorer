@@ -1,4 +1,4 @@
-package main
+package bimi
 
 import (
 	"strings"
@@ -6,7 +6,7 @@ import (
 	"golang.org/x/net/idna"
 )
 
-func purifyDomain(rawDomain string) (string, error) {
+func PurifyDomain(rawDomain string) (string, error) {
 	if !isASCII(rawDomain) {
 		// Punycode the domain
 		punycode, err := idna.ToASCII(rawDomain)

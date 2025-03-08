@@ -1,11 +1,15 @@
-package main
+package server
 
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/AwesomeLogos/bimi-explorer/internal/db"
+	"github.com/AwesomeLogos/bimi-explorer/lib/bimi"
+	"github.com/AwesomeLogos/bimi-explorer/ui"
 )
 
-func bimiHandler(w http.ResponseWriter, r *http.Request) {
+func BimiHandler(w http.ResponseWriter, r *http.Request) {
 
 	domain := r.PathValue("domain")
 	if domain == "" {
@@ -13,9 +17,9 @@ func bimiHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	bimi, bimiErr := lookupBimi(domain)
+	bimi, bimiErr := bimi.LookupBimi(domain)
 
-	runTemplate(w, r, "_bimi/index.tmpl", map[string]any{
+	ui.RunTemplate(w, r, "_bimi/index.tmpl", map[string]any{
 		"Bimi":   bimi,
 		"Domain": domain,
 		"Err":    bimiErr,
@@ -31,15 +35,15 @@ func refreshHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	domain, domainErr := getDomain(requestedDomain)
+	domain, domainErr := db.GetDomain(requestedDomain)
 	if domainErr != nil {
 		http.Error(w, "Unable to get domain", http.StatusNotFound)
 		return
 	}
 
-	bimi, bimiErr := lookupBimi(requestedDomain)
+	bimi, bimiErr := bimi.LookupBimi(requestedDomain)
 
-	runTemplate(w, r, "_bimi/index.tmpl", map[string]any{
+	ui.RunTemplate(w, r, "_bimi/index.tmpl", map[string]any{
 		"Bimi":   bimi,
 		"Domain": domain,
 		"Err":    bimiErr,
@@ -55,15 +59,15 @@ func sourceHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	domain, domainErr := getDomain(requestedDomain)
+	domain, domainErr := db.GetDomain(requestedDomain)
 	if domainErr != nil {
 		http.Error(w, "Unable to get domain", http.StatusNotFound)
 		return
 	}
 
-	contentType, body, fetchErr := fetchImgURL(domain.Imgurl.String)
+	contentType, body, fetchErr := bimi.FetchImgURL(domain.Imgurl.String)
 
-	runTemplate(w, r, "_bimi/source.tmpl", map[string]any{
+	ui.RunTemplate(w, r, "_bimi/source.tmpl", map[string]any{
 		"ContentType": contentType,
 		"Domain":      requestedDomain,
 		"Err":         fetchErr,

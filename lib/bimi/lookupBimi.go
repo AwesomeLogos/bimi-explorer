@@ -1,4 +1,4 @@
-package main
+package bimi
 
 import (
 	"encoding/json"
@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"regexp"
 	"slices"
+
+	"github.com/AwesomeLogos/bimi-explorer/internal/common"
+	"github.com/AwesomeLogos/bimi-explorer/internal/db"
 )
 
 type DnsResponse struct {
@@ -21,18 +24,18 @@ type DnsAnswer struct {
 	Data string `json:"data"`
 }
 
-func lookupBimi(rawDomain string) (string, error) {
+func LookupBimi(rawDomain string) (string, error) {
 
-	domain, domainErr := purifyDomain(rawDomain)
+	domain, domainErr := PurifyDomain(rawDomain)
 	if domainErr != nil {
-		logger.Error("invalid domain", "domain", rawDomain, "err", domainErr)
+		common.Logger.Error("invalid domain", "domain", rawDomain, "err", domainErr)
 		return "", domainErr
 	}
 
 	requestURL := fmt.Sprintf("https://cloudflare-dns.com/dns-query?name=default._bimi.%s&type=TXT", domain)
 	req, newErr := http.NewRequest(http.MethodGet, requestURL, nil)
 	if newErr != nil {
-		logger.Error("client could not create request", "err", newErr)
+		common.Logger.Error("client could not create request", "err", newErr)
 		return "", newErr
 	}
 	req.Header.Set("accept", "application/dns-json")
@@ -40,36 +43,36 @@ func lookupBimi(rawDomain string) (string, error) {
 
 	res, httpErr := http.DefaultClient.Do(req)
 	if httpErr != nil {
-		logger.Error("client error making http request: %s\n", httpErr)
+		common.Logger.Error("client error making http request", "err", httpErr)
 		return "", httpErr
 	}
-	logger.Info("lookup status code", "domain", domain, "statuscode", res.StatusCode)
+	common.Logger.Info("lookup status code", "domain", domain, "statuscode", res.StatusCode)
 
 	resBody, readErr := io.ReadAll(res.Body)
 	if readErr != nil {
-		logger.Error("client could not read response body", "err", readErr, "domain", domain)
+		common.Logger.Error("client could not read response body", "err", readErr, "domain", domain)
 		return "", readErr
 	}
-	logger.Debug("dns lookup success", "result", resBody)
+	common.Logger.Debug("dns lookup success", "result", resBody)
 
 	data := &DnsResponse{}
 	jsonErr := json.Unmarshal(resBody, data)
 	if jsonErr != nil {
-		logger.Error("unable to parse json dns results", "err", jsonErr, "data", string(resBody), "domain", domain)
+		common.Logger.Error("unable to parse json dns results", "err", jsonErr, "data", string(resBody), "domain", domain)
 		return "", jsonErr
 	}
-	logger.Info("dns response", "data", data)
+	common.Logger.Info("dns response", "data", data)
 
 	if data.Status != 0 {
-		logger.Error("dns error status", "statuscode", data.Status, "domain", domain)
+		common.Logger.Error("dns error status", "statuscode", data.Status, "domain", domain)
 		return "", fmt.Errorf("DNS_ERROR: %d", data.Status)
 	}
 	if data.Answer == nil {
-		logger.Error("dns error no answer", "domain", domain)
+		common.Logger.Error("dns error no answer", "domain", domain)
 		return "", fmt.Errorf("DNS_ERROR: %s", "NILDATA")
 	}
 	if len(data.Answer) == 0 {
-		logger.Error("dns error empty answer", "domain", domain)
+		common.Logger.Error("dns error empty answer", "domain", domain)
 		return "", fmt.Errorf("DNS_ERROR: %s", "LENZERO")
 	}
 
@@ -77,7 +80,7 @@ func lookupBimi(rawDomain string) (string, error) {
 		answer := removeQuotes(answerEntry.Data)
 		bimi := findBimi(answer)
 		if bimi != "" {
-			upsertDomain(domain, bimi)
+			db.UpsertDomain(domain, bimi)
 			return bimi, nil
 		}
 	}

@@ -1,4 +1,4 @@
-package main
+package bimi
 
 import (
 	"fmt"
@@ -11,10 +11,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/AwesomeLogos/bimi-explorer/generated"
+	"github.com/AwesomeLogos/bimi-explorer/internal/db"
+	"github.com/AwesomeLogos/bimi-explorer/internal/db/generated"
 )
 
-func fetchImgURL(imgurl string) (string, []byte, error) {
+func FetchImgURL(imgurl string) (string, []byte, error) {
 
 	client := http.Client{
 		Timeout: 15 * time.Second,
@@ -39,7 +40,7 @@ func validate(imgurl string) (bool, string, error) {
 		return false, "imgurl is empty", nil
 	}
 
-	contentType, _, fetchErr := fetchImgURL(imgurl)
+	contentType, _, fetchErr := FetchImgURL(imgurl)
 	if fetchErr != nil {
 		return false, "Unable to fetch image", fetchErr
 	}
@@ -55,13 +56,13 @@ func validate(imgurl string) (bool, string, error) {
 
 func bulkValidate() {
 
-	count, countErr := countUnvalidatedDomains()
+	count, countErr := db.CountUnvalidatedDomains()
 	if countErr != nil {
 		fmt.Fprintf(os.Stderr, "ERROR: unable to count domains: %v\n", countErr)
 		return
 	}
 
-	domains, domainErr := listUnvalidatedDomains(int32(count), 0)
+	domains, domainErr := db.ListUnvalidatedDomains(int32(count), 0)
 	if domainErr != nil {
 		fmt.Fprintf(os.Stderr, "ERROR: unable to list domains: %v\n", domainErr)
 		return
@@ -74,7 +75,7 @@ func validateWorker(domainChan chan generated.Domain, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for domain := range domainChan {
 		valid, msg, _ := validate(domain.Imgurl.String)
-		updateValidation(domain.Domain, valid, msg)
+		db.UpdateValidation(domain.Domain, valid, msg)
 	}
 }
 

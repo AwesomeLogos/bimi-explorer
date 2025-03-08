@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	"context"
@@ -6,32 +6,33 @@ import (
 	"os"
 	"strings"
 
-	"github.com/AwesomeLogos/bimi-explorer/generated"
+	"github.com/AwesomeLogos/bimi-explorer/internal/common"
+	"github.com/AwesomeLogos/bimi-explorer/internal/db/generated"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-func connect() (*pgx.Conn, error) {
+func Connect() (*pgx.Conn, error) {
 	dbUrl := os.Getenv("DB_URL")
 	u, urlErr := url.Parse(dbUrl)
 	if urlErr != nil {
-		logger.Error("Unable to parse database URL", "err", urlErr, "url", dbUrl)
+		common.Logger.Error("Unable to parse database URL", "err", urlErr, "url", dbUrl)
 		return nil, urlErr
 	}
 	u.User = url.UserPassword(u.User.Username(), os.Getenv("DB_PASSWORD"))
 	conn, connErr := pgx.Connect(context.Background(), u.String())
 	if connErr != nil {
 		//LATER: maybe log masked password?
-		logger.Error("Unable to connect to database", "err", connErr, "url", dbUrl)
+		common.Logger.Error("Unable to connect to database", "err", connErr, "url", dbUrl)
 		return nil, connErr
 	}
 
 	return conn, nil
 }
 
-func countDomains() (int64, error) {
+func CountDomains() (int64, error) {
 
-	conn, connErr := connect()
+	conn, connErr := Connect()
 	if connErr != nil {
 		// already logged
 		return 0, connErr
@@ -41,16 +42,16 @@ func countDomains() (int64, error) {
 	queries := generated.New(conn)
 	row, queryErr := queries.CountDomains(context.Background())
 	if queryErr != nil {
-		logger.Error("Unable to count", "err", queryErr)
+		common.Logger.Error("Unable to count", "err", queryErr)
 		return 0, queryErr
 	}
 
 	return row, nil
 }
 
-func countInvalidDomains() (int64, error) {
+func CountInvalidDomains() (int64, error) {
 
-	conn, connErr := connect()
+	conn, connErr := Connect()
 	if connErr != nil {
 		// already logged
 		return 0, connErr
@@ -60,16 +61,16 @@ func countInvalidDomains() (int64, error) {
 	queries := generated.New(conn)
 	row, queryErr := queries.CountInvalidDomains(context.Background())
 	if queryErr != nil {
-		logger.Error("Unable to count", "err", queryErr)
+		common.Logger.Error("Unable to count", "err", queryErr)
 		return 0, queryErr
 	}
 
 	return row, nil
 }
 
-func countUnvalidatedDomains() (int64, error) {
+func CountUnvalidatedDomains() (int64, error) {
 
-	conn, connErr := connect()
+	conn, connErr := Connect()
 	if connErr != nil {
 		// already logged
 		return 0, connErr
@@ -79,16 +80,16 @@ func countUnvalidatedDomains() (int64, error) {
 	queries := generated.New(conn)
 	row, queryErr := queries.CountUnvalidatedDomains(context.Background())
 	if queryErr != nil {
-		logger.Error("Unable to count", "err", queryErr)
+		common.Logger.Error("Unable to count", "err", queryErr)
 		return 0, queryErr
 	}
 
 	return row, nil
 }
 
-func getDomain(domain string) (generated.Domain, error) {
+func GetDomain(domain string) (generated.Domain, error) {
 
-	conn, connErr := connect()
+	conn, connErr := Connect()
 	if connErr != nil {
 		// already logged
 		return generated.Domain{}, connErr
@@ -98,16 +99,16 @@ func getDomain(domain string) (generated.Domain, error) {
 	queries := generated.New(conn)
 	row, queryErr := queries.GetDomain(context.Background(), domain)
 	if queryErr != nil {
-		logger.Error("Unable to get domain", "err", queryErr)
+		common.Logger.Error("Unable to get domain", "err", queryErr)
 		return generated.Domain{}, queryErr
 	}
 
 	return row, nil
 }
 
-func listDomains(limit int32, offset int32) ([]generated.Domain, error) {
+func ListDomains(limit int32, offset int32) ([]generated.Domain, error) {
 
-	conn, connErr := connect()
+	conn, connErr := Connect()
 	if connErr != nil {
 		// already logged
 		return nil, connErr
@@ -120,16 +121,16 @@ func listDomains(limit int32, offset int32) ([]generated.Domain, error) {
 		Theoffset: offset,
 	})
 	if queryErr != nil {
-		logger.Error("Unable to insert into database", "err", queryErr)
+		common.Logger.Error("Unable to insert into database", "err", queryErr)
 		return nil, queryErr
 	}
 
 	return rows, nil
 }
 
-func listInvalidDomains(limit int32, offset int32) ([]generated.Domain, error) {
+func ListInvalidDomains(limit int32, offset int32) ([]generated.Domain, error) {
 
-	conn, connErr := connect()
+	conn, connErr := Connect()
 	if connErr != nil {
 		// already logged
 		return nil, connErr
@@ -142,16 +143,16 @@ func listInvalidDomains(limit int32, offset int32) ([]generated.Domain, error) {
 		Theoffset: offset,
 	})
 	if queryErr != nil {
-		logger.Error("Unable to insert into database", "err", queryErr)
+		common.Logger.Error("Unable to insert into database", "err", queryErr)
 		return nil, queryErr
 	}
 
 	return rows, nil
 }
 
-func listRandomDomains(limit int32) ([]generated.Domain, error) {
+func ListRandomDomains(limit int32) ([]generated.Domain, error) {
 
-	conn, connErr := connect()
+	conn, connErr := Connect()
 	if connErr != nil {
 		// already logged
 		return nil, connErr
@@ -161,16 +162,16 @@ func listRandomDomains(limit int32) ([]generated.Domain, error) {
 	queries := generated.New(conn)
 	rows, queryErr := queries.ListRandom(context.Background(), limit)
 	if queryErr != nil {
-		logger.Error("Unable to select random", "err", queryErr)
+		common.Logger.Error("Unable to select random", "err", queryErr)
 		return nil, queryErr
 	}
 
 	return rows, nil
 }
 
-func listUnvalidatedDomains(limit int32, offset int32) ([]generated.Domain, error) {
+func ListUnvalidatedDomains(limit int32, offset int32) ([]generated.Domain, error) {
 
-	conn, connErr := connect()
+	conn, connErr := Connect()
 	if connErr != nil {
 		// already logged
 		return nil, connErr
@@ -183,16 +184,16 @@ func listUnvalidatedDomains(limit int32, offset int32) ([]generated.Domain, erro
 		Theoffset: offset,
 	})
 	if queryErr != nil {
-		logger.Error("Unable to insert into database", "err", queryErr)
+		common.Logger.Error("Unable to insert into database", "err", queryErr)
 		return nil, queryErr
 	}
 
 	return rows, nil
 }
 
-func searchDomains(searchTerm string) ([]generated.Domain, error) {
+func SearchDomains(searchTerm string) ([]generated.Domain, error) {
 
-	conn, connErr := connect()
+	conn, connErr := Connect()
 	if connErr != nil {
 		// already logged
 		return nil, connErr
@@ -206,16 +207,16 @@ func searchDomains(searchTerm string) ([]generated.Domain, error) {
 	queries := generated.New(conn)
 	rows, queryErr := queries.SearchDomains(context.Background(), searchTerm)
 	if queryErr != nil {
-		logger.Error("Unable to select random", "err", queryErr)
+		common.Logger.Error("Unable to select random", "err", queryErr)
 		return nil, queryErr
 	}
 
 	return rows, nil
 }
 
-func updateValidation(domain string, valid bool, reason string) error {
+func UpdateValidation(domain string, valid bool, reason string) error {
 
-	conn, connErr := connect()
+	conn, connErr := Connect()
 	if connErr != nil {
 		// already logged
 		return connErr
@@ -229,16 +230,16 @@ func updateValidation(domain string, valid bool, reason string) error {
 		Reason: pgtype.Text{String: reason, Valid: true},
 	})
 	if queryErr != nil {
-		logger.Error("Unable to update validity in database", "err", queryErr)
+		common.Logger.Error("Unable to update validity in database", "err", queryErr)
 		return queryErr
 	}
 
 	return nil
 }
 
-func upsertDomain(domain, imgurl string) error {
+func UpsertDomain(domain, imgurl string) error {
 
-	conn, connErr := connect()
+	conn, connErr := Connect()
 	if connErr != nil {
 		// already logged
 		return connErr
@@ -251,7 +252,7 @@ func upsertDomain(domain, imgurl string) error {
 		Imgurl: pgtype.Text{String: imgurl, Valid: true},
 	})
 	if queryErr != nil {
-		logger.Error("Unable to insert into database", "err", queryErr)
+		common.Logger.Error("Unable to insert into database", "err", queryErr)
 		return queryErr
 	}
 

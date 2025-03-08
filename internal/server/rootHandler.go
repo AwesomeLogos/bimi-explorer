@@ -1,20 +1,22 @@
-package main
+package server
 
 import (
 	"net/http"
 	"strconv"
 
-	"github.com/AwesomeLogos/bimi-explorer/generated"
+	"github.com/AwesomeLogos/bimi-explorer/internal/db"
+	"github.com/AwesomeLogos/bimi-explorer/internal/db/generated"
+	"github.com/AwesomeLogos/bimi-explorer/ui"
 )
 
-func listHandler(w http.ResponseWriter, r *http.Request) {
+func ListHandler(w http.ResponseWriter, r *http.Request) {
 
 	pageSize, psErr := strconv.Atoi(r.URL.Query().Get("pageSize"))
 	if psErr != nil || pageSize < 1 {
 		pageSize = 2500
 	}
 
-	count, _ := countDomains()
+	count, _ := db.CountDomains()
 	maxPages := int(count / int64(pageSize))
 	if count%int64(pageSize) > 0 {
 		maxPages++
@@ -24,9 +26,9 @@ func listHandler(w http.ResponseWriter, r *http.Request) {
 	if cpErr != nil || currentPage < 1 || currentPage > maxPages {
 		currentPage = 1
 	}
-	domains, dbErr := listDomains(int32(pageSize), int32((currentPage-1)*pageSize))
+	domains, dbErr := db.ListDomains(int32(pageSize), int32((currentPage-1)*pageSize))
 
-	runTemplate(w, r, "bimi/list.tmpl", map[string]any{
+	ui.RunTemplate(w, r, "bimi/list.tmpl", map[string]any{
 		"Count":       count,
 		"CurrentPage": currentPage,
 		"Domains":     domains,
@@ -38,14 +40,14 @@ func listHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func listInvalidHandler(w http.ResponseWriter, r *http.Request) {
+func ListInvalidHandler(w http.ResponseWriter, r *http.Request) {
 
 	pageSize, psErr := strconv.Atoi(r.URL.Query().Get("pageSize"))
 	if psErr != nil || pageSize < 1 {
 		pageSize = 100
 	}
 
-	count, _ := countInvalidDomains()
+	count, _ := db.CountInvalidDomains()
 	maxPages := int(count / int64(pageSize))
 	if count%int64(pageSize) > 0 {
 		maxPages++
@@ -55,9 +57,9 @@ func listInvalidHandler(w http.ResponseWriter, r *http.Request) {
 	if cpErr != nil || currentPage < 1 || currentPage > maxPages {
 		currentPage = 1
 	}
-	domains, dbErr := listInvalidDomains(int32(pageSize), int32((currentPage-1)*pageSize))
+	domains, dbErr := db.ListInvalidDomains(int32(pageSize), int32((currentPage-1)*pageSize))
 
-	runTemplate(w, r, "bimi/invalid.tmpl", map[string]any{
+	ui.RunTemplate(w, r, "bimi/invalid.tmpl", map[string]any{
 		"Count":       count,
 		"CurrentPage": currentPage,
 		"Domains":     domains,
@@ -69,19 +71,19 @@ func listInvalidHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func rootHandlerGet(w http.ResponseWriter, r *http.Request) {
+func RootHandlerGet(w http.ResponseWriter, r *http.Request) {
 
 	var domains []generated.Domain
 	var dbErr error
 
 	query := r.URL.Query().Get("q")
 	if query != "" {
-		domains, dbErr = searchDomains(query)
+		domains, dbErr = db.SearchDomains(query)
 	} else {
-		domains, dbErr = listRandomDomains(50)
+		domains, dbErr = db.ListRandomDomains(50)
 	}
 
-	runTemplate(w, r, "bimi/index.tmpl", map[string]any{
+	ui.RunTemplate(w, r, "bimi/index.tmpl", map[string]any{
 		"Domains": domains,
 		"Err":     dbErr,
 		"H1":      "Welcome",
@@ -91,18 +93,18 @@ func rootHandlerGet(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func rootHandlerPost(w http.ResponseWriter, r *http.Request) {
+func RootHandlerPost(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/bimi/", http.StatusSeeOther)
 }
 
-func viewHandler(w http.ResponseWriter, r *http.Request) {
+func ViewHandler(w http.ResponseWriter, r *http.Request) {
 
 	pageSize, psErr := strconv.Atoi(r.URL.Query().Get("pageSize"))
 	if psErr != nil || pageSize < 1 {
 		pageSize = 144
 	}
 
-	count, _ := countDomains()
+	count, _ := db.CountDomains()
 	maxPages := int(count / int64(pageSize))
 	if count%int64(pageSize) > 0 {
 		maxPages++
@@ -113,9 +115,9 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 		currentPage = 1
 	}
 
-	domains, dbErr := listDomains(int32(pageSize), int32((currentPage-1)*pageSize))
+	domains, dbErr := db.ListDomains(int32(pageSize), int32((currentPage-1)*pageSize))
 
-	runTemplate(w, r, "bimi/view.tmpl", map[string]any{
+	ui.RunTemplate(w, r, "bimi/view.tmpl", map[string]any{
 		"CurrentPage": currentPage,
 		"Domains":     domains,
 		"Err":         dbErr,

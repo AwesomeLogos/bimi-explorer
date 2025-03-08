@@ -1,8 +1,8 @@
-package main
+package common
 
 import (
 	"log/slog"
 	"os"
 )
 
-var logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
+var Logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))

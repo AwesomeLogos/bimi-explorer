@@ -1,20 +1,22 @@
-package main
+package ui
 
 import (
 	"embed"
 	"io/fs"
 	"net/http"
+
+	"github.com/AwesomeLogos/bimi-explorer/internal/common"
 )
 
 //go:embed static
 var embeddedFiles embed.FS
-var staticHandler = initStaticHandler()
+var StaticHandler = initStaticHandler()
 
 func initStaticHandler() http.Handler {
 
 	fsys, err := fs.Sub(embeddedFiles, "static")
 	if err != nil {
-		logger.Error("unable to create static file system", "error", err)
+		common.Logger.Error("unable to create static file system", "error", err)
 		panic(err)
 	}
 

@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"archive/tar"
@@ -6,13 +6,14 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/AwesomeLogos/bimi-explorer/logosearch"
+	"github.com/AwesomeLogos/bimi-explorer/internal/db"
+	"github.com/AwesomeLogos/bimi-explorer/lib/logosearch"
 )
 
 func buildSourceData() ([]byte, error) {
-	count, _ := countDomains()
+	count, _ := db.CountDomains()
 
-	domains, dbErr := listDomains(int32(count), 0)
+	domains, dbErr := db.ListDomains(int32(count), 0)
 	if dbErr != nil {
 		return nil, dbErr
 	}
@@ -26,7 +27,7 @@ func buildSourceData() ([]byte, error) {
 	return jsonData, nil
 }
 
-func sourceDataJson(w http.ResponseWriter, r *http.Request) {
+func SourceDataJson(w http.ResponseWriter, r *http.Request) {
 
 	sourceData, sourceErr := buildSourceData()
 	if sourceErr != nil {
@@ -38,7 +39,7 @@ func sourceDataJson(w http.ResponseWriter, r *http.Request) {
 	w.Write(sourceData)
 }
 
-func sourceDataTgz(w http.ResponseWriter, r *http.Request) {
+func SourceDataTgz(w http.ResponseWriter, r *http.Request) {
 
 	sourceData, sourceErr := buildSourceData()
 	if sourceErr != nil {

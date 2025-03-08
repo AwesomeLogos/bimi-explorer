@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"net/http"
@@ -18,7 +18,7 @@ type Status struct {
 	Tech      string `json:"tech"`
 }
 
-func statusHandler(w http.ResponseWriter, r *http.Request) {
+func StatusHandler(w http.ResponseWriter, r *http.Request) {
 	status := Status{}
 
 	status.Success = true

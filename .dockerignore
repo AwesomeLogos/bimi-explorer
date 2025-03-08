@@ -1,8 +1,10 @@
 .*
 *.env
 Dockerfile
+*.log*
+*.md
 README.md
 *.sh
-tmp
+*.tmp*
 TODO.md
 

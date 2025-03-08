@@ -1,15 +1,17 @@
-package main
+package server
 
 import (
 	"encoding/json"
 	"net/http"
+
+	"github.com/AwesomeLogos/bimi-explorer/internal/common"
 )
 
 func handleJson(w http.ResponseWriter, r *http.Request, data any) {
 
 	b, err := json.Marshal(data)
 	if err != nil {
-		logger.Error("json.Marshal failed", "error", err, "data", data)
+		common.Logger.Error("json.Marshal failed", "error", err, "data", data)
 		b = []byte("{\"success\":false,\"err\":\"json.Marshal failed\"}")
 	}
 

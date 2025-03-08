@@ -73,3 +73,12 @@ func bulkLoader(filenames []string) {
 
 	wg.Wait()
 }
+
+func main() {
+
+	if len(os.Args) > 1 && os.Args[1] == "--validate" {
+		bulkValidate()
+	} else {
+		bulkLoader(os.Args[1:])
+	}
+}

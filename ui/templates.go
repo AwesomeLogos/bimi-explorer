@@ -1,13 +1,14 @@
-package main
+package ui
 
 import (
 	"bytes"
 	"embed"
+	"html/template"
 	"io/fs"
 	"net/http"
 	"strings"
 
-	"html/template"
+	"github.com/AwesomeLogos/bimi-explorer/internal/common"
 )
 
 //go:embed partials
@@ -52,7 +53,7 @@ func initTemplates() map[string]TemplateFunc {
 			// read the partials file and append to partials
 			content, readErr := fs.ReadFile(partialsFS, path)
 			if readErr != nil {
-				logger.Error("unable to read partials file", "err", readErr, "filename", path)
+				common.Logger.Error("unable to read partials file", "err", readErr, "filename", path)
 				return err
 			}
 			partials.Write(content)
@@ -60,19 +61,19 @@ func initTemplates() map[string]TemplateFunc {
 		return nil
 	})
 	if partialErr != nil {
-		logger.Error("unable to register partials", "err", partialErr)
+		common.Logger.Error("unable to register partials", "err", partialErr)
 	}
 
 	viewErr := fs.WalkDir(viewsFS, ".", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
-			logger.Error("walkdir error", "err", err)
+			common.Logger.Error("walkdir error", "err", err)
 			return err
 		}
 		if !d.IsDir() {
-			logger.Debug("registering view", "filename", path)
+			common.Logger.Debug("registering view", "filename", path)
 			content, readErr := fs.ReadFile(viewsFS, path)
 			if readErr != nil {
-				logger.Error("unable to read view file", "err", readErr, "filename", path)
+				common.Logger.Error("unable to read view file", "err", readErr, "filename", path)
 				return err
 			}
 			name := path[len("views/"):]
@@ -83,14 +84,14 @@ func initTemplates() map[string]TemplateFunc {
 			t := template.New(name).Funcs(funcMap)
 			template, parseErr := t.Parse(templateBuffer.String())
 			if parseErr != nil {
-				logger.Error("unable to parse template", "err", parseErr, "filename", path, "content", string(content))
+				common.Logger.Error("unable to parse template", "err", parseErr, "filename", path, "content", string(content))
 				return parseErr
 			}
 			theCache[name] = func(data any) (string, error) {
 				var buf bytes.Buffer
 				err := template.Execute(&buf, data)
 				if err != nil {
-					logger.Error("unable to execute template", "err", err, "filename", path, "content", string(content))
+					common.Logger.Error("unable to execute template", "err", err, "filename", path, "content", string(content))
 					return "", err
 				}
 				return buf.String(), nil
@@ -99,7 +100,7 @@ func initTemplates() map[string]TemplateFunc {
 		return nil
 	})
 	if viewErr != nil {
-		logger.Error("unable to register views", "err", viewErr)
+		common.Logger.Error("unable to register views", "err", viewErr)
 	}
 
 	return theCache
@@ -127,7 +128,7 @@ func makeCrumbtrail(r *http.Request) []CrumbtrailEntry {
 	return crumbtrail
 }
 
-func runTemplate(w http.ResponseWriter, r *http.Request, templateName string, data TemplateData) {
+func RunTemplate(w http.ResponseWriter, r *http.Request, templateName string, data TemplateData) {
 
 	fn := templateCache[templateName]
 	if fn == nil {
@@ -141,7 +142,7 @@ func runTemplate(w http.ResponseWriter, r *http.Request, templateName string, da
 
 	result, execErr := fn(data)
 	if execErr != nil {
-		logger.Error("template failed", "err", execErr, "template", templateName)
+		common.Logger.Error("template failed", "err", execErr, "template", templateName)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
