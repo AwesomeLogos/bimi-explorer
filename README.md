@@ -1,4 +1,4 @@
-# BIMI Explorer [<img alt="Logo for BIMI Explorer" src="static/favicon.svg" height="96" align="right"/>](https://bimi-explorer.svg.zone/)
+# BIMI Explorer [<img alt="Logo for BIMI Explorer" src="ui/static/favicon.svg" height="96" align="right"/>](https://bimi-explorer.svg.zone/)
 
 [![deploy](https://github.com/AwesomeLogos/bimi-explorer/actions/workflows/gcr-deploy.yaml/badge.svg)](https://github.com/AwesomeLogos/bimi-explorer/actions/workflows/gcr-deploy.yaml)
 
