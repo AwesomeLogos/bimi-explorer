@@ -13,7 +13,7 @@ SELECT
         domain
     WHERE
         valid = FALSE;
-
+SELECT * FROM pg_stat_activity;
 -- name: CountUnvalidatedDomains :one
 SELECT 
         COUNT(*) AS "Count" 

@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/AwesomeLogos/bimi-explorer/lib/bimi"
 )
 
 var splitter = regexp.MustCompile("[\r\n, ]+")
@@ -16,7 +18,7 @@ var splitter = regexp.MustCompile("[\r\n, ]+")
 func bulkWorker(domainChan chan string, wg *sync.WaitGroup) {
 	defer wg.Done()
 	for domain := range domainChan {
-		lookupBimi(domain)
+		bimi.LookupBimi(domain)
 	}
 }
 
@@ -76,8 +78,9 @@ func bulkLoader(filenames []string) {
 
 func main() {
 
-	if len(os.Args) > 1 && os.Args[1] == "--validate" {
-		bulkValidate()
+	if len(os.Args) <= 1 || os.Args[1] == "--help" {
+		fmt.Fprintf(os.Stderr, "Usage: %s <file1> [<file2> ...]\n", os.Args[0])
+		os.Exit(1)
 	} else {
 		bulkLoader(os.Args[1:])
 	}

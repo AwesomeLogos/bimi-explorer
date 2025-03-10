@@ -54,7 +54,7 @@ func validate(imgurl string) (bool, string, error) {
 	return true, "OK", nil
 }
 
-func bulkValidate() {
+func BulkValidate() {
 
 	count, countErr := db.CountUnvalidatedDomains()
 	if countErr != nil {
