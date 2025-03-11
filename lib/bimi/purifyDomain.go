@@ -7,6 +7,16 @@ import (
 )
 
 func PurifyDomain(rawDomain string) (string, error) {
+
+	if strings.HasPrefix(rawDomain, "http://") || strings.HasPrefix(rawDomain, "https://") {
+		rawDomain = strings.TrimPrefix(rawDomain, "http://")
+		rawDomain = strings.TrimPrefix(rawDomain, "https://")
+	}
+
+	if strings.HasPrefix("www.", rawDomain) {
+		rawDomain = strings.TrimPrefix(rawDomain, "www.")
+	}
+
 	if !isASCII(rawDomain) {
 		// Punycode the domain
 		punycode, err := idna.ToASCII(rawDomain)

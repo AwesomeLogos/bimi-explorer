@@ -7,6 +7,10 @@
     }
 </style>
 
+<p>
+    Logo URL: <a href="{{.Bimi}}" target="_blank">{{.Bimi}}</a>
+</p>
+
 <h3>Masked</h3>
 <div class="container d-flex justify-content-center row">
     <div class="col-xs-12 col-sm-4">
@@ -37,7 +41,7 @@
 <h3>Zoomed</h3>
 <div class="row">
     <div class="col">
-        <img class="zoomed" src="{{.Bimi}}" alt="{{.Domain}} logo" />
+        <a href="https://svg-viewer.fileformat.info/view.html?zoom=icons&url={{urlquery .Bimi}}&backUrl={{urlquery .CurrentURL}}"><img class="zoomed" src="{{.Bimi}}" alt="{{.Domain}} logo" /></a>
     </div>
 </div>
 

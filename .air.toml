@@ -3,9 +3,9 @@ tmp_dir = "tmp"
 
 [build]
   bin = "./tmp/main"
-  cmd = "sqlc generate && sleep 1 && go build -o ./tmp/main cmd/web/main.go"
+  cmd = "sqlc generate && go build -o ./tmp/main cmd/web/main.go"
   delay = 1000
-  exclude_dir = ["tmp", "generated"]
+  exclude_dir = ["tmp", "internal/db/generated"]
   exclude_file = []
   exclude_regex = []
   exclude_unchanged = false
