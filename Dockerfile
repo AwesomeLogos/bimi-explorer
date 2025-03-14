@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM golang:1.22-alpine AS builder
+FROM golang:1.23-alpine AS builder
 RUN apk update && \
     apk upgrade && \
     apk --no-cache add git
@@ -18,7 +18,7 @@ RUN \
     CGO_ENABLED=0 GOOS=linux go build \
     -a \
     -installsuffix cgo \
-    -ldflags "-X internal.server.COMMIT=$COMMIT -X internal.server.LASTMOD=$LASTMOD -extldflags '-static'" \
+    -ldflags "-X github.com/AwesomeLogos/bimi-explorer/internal/server.COMMIT=$COMMIT -X github.com/AwesomeLogos/bimi-explorer/internal/server.LASTMOD=$LASTMOD -extldflags '-static'" \
     -o bimi-explorer \
     cmd/web/main.go
 
