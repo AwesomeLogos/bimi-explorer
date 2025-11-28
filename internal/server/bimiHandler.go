@@ -46,7 +46,7 @@ func BimiHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func refreshHandler(w http.ResponseWriter, r *http.Request) {
+func RefreshHandler(w http.ResponseWriter, r *http.Request) {
 
 	requestedDomain := r.PathValue("domain")
 	if requestedDomain == "" {
@@ -66,7 +66,7 @@ func refreshHandler(w http.ResponseWriter, r *http.Request) {
 		"Bimi":   bimi,
 		"Domain": domain,
 		"Err":    bimiErr,
-		"Title":  fmt.Sprintf("BIMI Logo for %s", domain),
+		"Title":  fmt.Sprintf("BIMI Logo for %s", domain.Domain),
 	})
 }
 
@@ -92,6 +92,6 @@ func sourceHandler(w http.ResponseWriter, r *http.Request) {
 		"Err":         fetchErr,
 		"Formatted":   body, //LATER: pretty print the XML
 		"Raw":         body,
-		"Title":       fmt.Sprintf("BIMI Logo for %s", domain),
+		"Title":       fmt.Sprintf("BIMI Logo for %s", domain.Domain),
 	})
 }

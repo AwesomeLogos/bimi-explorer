@@ -27,6 +27,7 @@ func main() {
 	http.HandleFunc("/favicon.svg", ui.StaticHandler.ServeHTTP)
 	http.HandleFunc("/images/", ui.StaticHandler.ServeHTTP)
 	http.HandleFunc("/bimi/{domain}/{$}", server.BimiHandler)
+	http.HandleFunc("/bimi/{domain}/refresh.html", server.RefreshHandler)
 	http.HandleFunc("/bimi/invalid.html", server.ListInvalidHandler)
 	http.HandleFunc("/bimi/list.html", server.ListHandler)
 	http.HandleFunc("/bimi/view.html", server.ViewHandler)
